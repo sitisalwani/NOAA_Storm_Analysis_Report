@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1579725967722.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "13DBE5F0",
+    "lastKnownWriteTime" : 1579726333,
+    "last_content_update" : 1579726333069,
+    "path" : "~/Dropbox/Cousera/Course5/Project_2/NOAA_Storm_Analysis_Report/main.R",
+    "project_path" : "main.R",
+    "properties" : {
+        "cursorPosition" : "16,0",
+        "scrollLine" : "10",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

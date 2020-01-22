@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1579726836998.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3716993438",
+    "id" : "300575D1",
+    "lastKnownWriteTime" : 1579726942,
+    "last_content_update" : 1579726942559,
+    "path" : "~/Dropbox/Cousera/Course5/Project_2/NOAA_Storm_Analysis_Report/plot3.R",
+    "project_path" : "plot3.R",
+    "properties" : {
+        "cursorPosition" : "12,104",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
