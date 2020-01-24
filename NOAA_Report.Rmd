@@ -1,5 +1,5 @@
 ---
-title: "Exploring the NOAA Storm Database : Health and Economic Impacts of Severe Weather in the US"
+title: "NOAA Storm Database Report : Health and Economic Impacts of Severe Weather in the US"
 author: "Siti Salwani Yaacob"
 date: "1/23/2020"
 output: html_document
@@ -28,7 +28,7 @@ This project involves exploring the U.S. National Oceanic and Atmospheric Admini
 - Floods are responsible for the most economic damage.
 
 ### Data Pre-Processing
-```{r}
+```{r cache=TRUE}
 # Dowloading data if it's not already done
 if(!file.exists("stormData.csv.bz2")) {
   download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2",
@@ -36,71 +36,82 @@ if(!file.exists("stormData.csv.bz2")) {
 }
 
 # Loading data
-dsNOAA <- read.csv(bzfile("stormData.csv.bz2"), sep=",", header=T)
+storm_data <- read.csv(bzfile("stormData.csv.bz2"), sep=",", header=T)
 
 # Subset (NOAA) storm database
-tidyNOAA <- dsNOAA[,c('EVTYPE','FATALITIES','INJURIES', 'PROPDMG', 'PROPDMGEXP', 'CROPDMG', 'CROPDMGEXP')]
+tidy_storm_data <- storm_data[,c('EVTYPE','FATALITIES','INJURIES', 'PROPDMG', 'PROPDMGEXP', 'CROPDMG', 'CROPDMGEXP')]
 
 # Convert H, K, M, B units to calculate Property Damage 
-tidyNOAA$PROPDMGNUM = 0
-tidyNOAA[tidyNOAA$PROPDMGEXP == "H", ]$PROPDMGNUM = tidyNOAA[tidyNOAA$PROPDMGEXP == "H", ]$PROPDMG * 10^2
-tidyNOAA[tidyNOAA$PROPDMGEXP == "K", ]$PROPDMGNUM = tidyNOAA[tidyNOAA$PROPDMGEXP == "K", ]$PROPDMG * 10^3
-tidyNOAA[tidyNOAA$PROPDMGEXP == "M", ]$PROPDMGNUM = tidyNOAA[tidyNOAA$PROPDMGEXP == "M", ]$PROPDMG * 10^6
-tidyNOAA[tidyNOAA$PROPDMGEXP == "B", ]$PROPDMGNUM = tidyNOAA[tidyNOAA$PROPDMGEXP == "B", ]$PROPDMG * 10^9
+tidy_storm_data$PROPDMGNUM = 0
+tidy_storm_data[tidy_storm_data$PROPDMGEXP == "H", ]$PROPDMGNUM = tidy_storm_data[tidy_storm_data$PROPDMGEXP == "H", ]$PROPDMG * 10^2
+tidy_storm_data[tidy_storm_data$PROPDMGEXP == "K", ]$PROPDMGNUM = tidy_storm_data[tidy_storm_data$PROPDMGEXP == "K", ]$PROPDMG * 10^3
+tidy_storm_data[tidy_storm_data$PROPDMGEXP == "M", ]$PROPDMGNUM = tidy_storm_data[tidy_storm_data$PROPDMGEXP == "M", ]$PROPDMG * 10^6
+tidy_storm_data[tidy_storm_data$PROPDMGEXP == "B", ]$PROPDMGNUM = tidy_storm_data[tidy_storm_data$PROPDMGEXP == "B", ]$PROPDMG * 10^9
 
 # Convert H, K, M, B units to calculate Crop Damage
-tidyNOAA$CROPDMGNUM = 0
-tidyNOAA[tidyNOAA$CROPDMGEXP == "H", ]$CROPDMGNUM = tidyNOAA[tidyNOAA$CROPDMGEXP == "H", ]$CROPDMG * 10^2
-tidyNOAA[tidyNOAA$CROPDMGEXP == "K", ]$CROPDMGNUM = tidyNOAA[tidyNOAA$CROPDMGEXP == "K", ]$CROPDMG * 10^3
-tidyNOAA[tidyNOAA$CROPDMGEXP == "M", ]$CROPDMGNUM = tidyNOAA[tidyNOAA$CROPDMGEXP == "M", ]$CROPDMG * 10^6
-tidyNOAA[tidyNOAA$CROPDMGEXP == "B", ]$CROPDMGNUM = tidyNOAA[tidyNOAA$CROPDMGEXP == "B", ]$CROPDMG * 10^9
+tidy_storm_data$CROPDMGNUM = 0
+tidy_storm_data[tidy_storm_data$CROPDMGEXP == "H", ]$CROPDMGNUM = tidy_storm_data[tidy_storm_data$CROPDMGEXP == "H", ]$CROPDMG * 10^2
+tidy_storm_data[tidy_storm_data$CROPDMGEXP == "K", ]$CROPDMGNUM = tidy_storm_data[tidy_storm_data$CROPDMGEXP == "K", ]$CROPDMG * 10^3
+tidy_storm_data[tidy_storm_data$CROPDMGEXP == "M", ]$CROPDMGNUM = tidy_storm_data[tidy_storm_data$CROPDMGEXP == "M", ]$CROPDMG * 10^6
+tidy_storm_data[tidy_storm_data$CROPDMGEXP == "B", ]$CROPDMGNUM = tidy_storm_data[tidy_storm_data$CROPDMGEXP == "B", ]$CROPDMG * 10^9
 ```
 
 ### Results
 
-Accross the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health ?
-```{r}
+**Accross the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health ?**
+```{r cache=TRUE, fig.width=11, fig.height=6}
 # import ggplot2 library to plot the result
 library(ggplot2)
 # plot number of fatalities with the most harmful event type
-fatalities <- aggregate(FATALITIES ~ EVTYPE, data=tidyNOAA, sum)
+fatalities <- aggregate(FATALITIES ~ EVTYPE, data=tidy_storm_data, sum)
 fatalities <- fatalities[order(-fatalities$FATALITIES), ][1:10, ]
 fatalities$EVTYPE <- factor(fatalities$EVTYPE, levels = fatalities$EVTYPE)
 
-ggplot(fatalities, aes(x = EVTYPE, y = FATALITIES)) + 
-    geom_bar(stat = "identity", fill = "red", las = 3) + 
+fatality_graph <- ggplot(fatalities, aes(x = EVTYPE, y = FATALITIES)) + 
+    geom_bar(stat = "identity", fill = "gray", las = 3) + 
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-    xlab("Event Type") + ylab("Fatalities") + ggtitle("Number of fatalities by top 10 Weather Events")
+    xlab("Event Type") + ylab("Fatalities") + ggtitle("Number of Fatalities by Top 10 Weather Events")
+
+print(fatality_graph)
 ```
 
 
-```{r}
+```{r cache=TRUE, fig.width=11, fig.height=6}
 # import ggplot2 library to plot the result
 library(ggplot2)
 # plot number of injuries with the most harmful event type
-injuries <- aggregate(INJURIES ~ EVTYPE, data=tidyNOAA, sum)
+injuries <- aggregate(INJURIES ~ EVTYPE, data=tidy_storm_data, sum)
 injuries <- injuries[order(-injuries$INJURIES), ][1:10, ]
 injuries$EVTYPE <- factor(injuries$EVTYPE, levels = injuries$EVTYPE)
 
-ggplot(injuries, aes(x = EVTYPE, y = INJURIES)) + 
-    geom_bar(stat = "identity", fill = "red", las = 3) + 
+injuries_graph <- ggplot(injuries, aes(x = EVTYPE, y = INJURIES)) + 
+    geom_bar(stat = "identity", fill = "gray", las = 3) + 
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-    xlab("Event Type") + ylab("Injuries") + ggtitle("Number of injuries by top 10 Weather Events")
+    xlab("Event Type") + ylab("Injuries") + ggtitle("Number of Injuries by Top 10 Weather Events")
+
+print(injuries_graph)
 ```
 
-Across the United States, which types of events have the greatest economic consequences ?
-```{r}
+**Across the United States, which types of events have the greatest economic consequences ?**
+```{r cache=TRUE, fig.width=11, fig.height=6}
 # import ggplot2 library to plot the result
 library(ggplot2)
 # plot number of damages with the most harmful event type
-damages <- aggregate(PROPDMGNUM + CROPDMGNUM ~ EVTYPE, data=tidyNOAA, sum)
+damages <- aggregate(PROPDMGNUM + CROPDMGNUM ~ EVTYPE, data=tidy_storm_data, sum)
 names(damages) = c("EVTYPE", "TOTALDAMAGE")
 damages <- damages[order(-damages$TOTALDAMAGE), ][1:10, ]
 damages$EVTYPE <- factor(damages$EVTYPE, levels = damages$EVTYPE)
 
-ggplot(damages, aes(x = EVTYPE, y = TOTALDAMAGE)) + 
-    geom_bar(stat = "identity", fill = "red", las = 3) + 
+property_crop_damages_graph <- ggplot(damages, aes(x = EVTYPE, y = TOTALDAMAGE)) + 
+    geom_bar(stat = "identity", fill = "gray", las = 3) + 
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-    xlab("Event Type") + ylab("Damages ($)") + ggtitle("Property & Crop Damages by top 10 Weather Events")
+    xlab("Event Type") + ylab("Damages ($)") + ggtitle("Property and Crop Damages by top 10 Weather Events")
+
+print(property_crop_damages_graph)
 ```
 
+### Conclusions
+
+- Reviewing storm data from 1996, we found "Tornado" is the most powerful event to population health. We evaluated it by normalized data of deviation value.
+
+- Reviewng storm data from 1996, we found "Flood" has the greatest economic consequences. This conclusion has been made by summary of both property damage and crop damage.
